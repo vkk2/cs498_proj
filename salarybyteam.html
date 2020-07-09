@@ -73,9 +73,9 @@
             .size([width-150, height])
             .padding(1.5);
 
-        d3.csv("https://raw.githubusercontent.com/ssubhasis/cs498_DataVis_proj/master/fifa_2018_players_country_earning.csv", function(d) {
-        d.value = +d["Value"];
-        d.Country = d["Nationality"];
+        d3.csv("https://raw.githubusercontent.com/vkk2/cs498_proj/master/teamsalarywin.csv", function(d) {
+        d.salary = +d["Salary"];
+        d.team = d["Tm"];
         // console.log(d);
         // debugger;
             return d;
@@ -83,12 +83,12 @@
         if (error) throw error;
 
         var color = d3.scaleOrdinal()
-        .domain(data.map(function(d){ return d.Country;}))
+        .domain(data.map(function(d){ return d.team;}))
         .range(['#fbb4ae','#b3cde3','#ccebc5','#decbe4','#fed9a6',
         '#ffe9a8','#b9bfe3','#fddaec','#cccccc']);
         
         var root = d3.hierarchy({children: data})
-            .sum(function(d) { return d.value; });
+            .sum(function(d) { return d.salary; });
 
         var node = svg.selectAll(".node")
             .data(pack(root).leaves())
@@ -100,7 +100,7 @@
         node.append("circle")
             .attr("id", function(d) { return d.id; })
             .attr("r", function(d) { return d.r; })
-            .style("fill", function(d) { return color(d.data.Country); })
+            .style("fill", function(d) { return color(d.data.team); })
             .on("mouseover", function(d) {		
                 div.transition()		
                 .duration(200)		
@@ -110,10 +110,10 @@
                 data.forEach(function(d, i) {
                     // console.log(d.value);
                     node.transition().duration(duration).delay(i * duration)
-                        .attr("r", d.value);
+                        .attr("r", d.salary);
                     });
         
-                div.html("Country:- "+d.data.Country + "<br>All Players Earning:- "+d.data.value +"(€)" )	
+                div.html("Team:- "+d.data.team + "<br>Total Salary:- " + "$" +d.data.salary  )	
                 .style("left", (d3.event.pageX) + "px")		
                 .style("top", (d3.event.pageY - 28) + "px");	
             })					
@@ -129,7 +129,7 @@
                 .attr("dy", ".2em")
                 .style("text-anchor", "middle")
                 .text(function(d) {
-                    return d.data.Country.substring(0, d.r / 3);
+                    return d.data.team.substring(0, d.r / 3);
                 })
                 .attr("font-family", "sans-serif")
                 .attr("font-size", function(d){

@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<!-- <script type="text/javascript" charset="UTF-8"></script> -->
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>2017-18 NBA Salary by Team</title>
+      
+    <style>
+    
+        svg {
+            font: 10px sans-serif;
+        }
+    
+        div.tooltip {	
+            position: absolute;			
+            text-align: center;			
+            width: 180px;					
+            height: 50px;					
+            padding: 2px;				
+            font: 12px sans-serif;		
+            background: rgb(220, 228, 223);	
+            border: 0px;		
+            border-radius: 8px;			
+            pointer-events: none;			
+        }
+        a {
+            text-decoration: none;
+            display: inline-block;
+            padding: 8px 16px;
+        }
+
+        a:hover {
+            background-color: #ddd;
+            color: black;
+        }
+        .round {
+            border-radius: 50%;
+        }
+        .previous {
+            background-color: #f1f1f1;
+            color: black;
+        }
+
+        .next {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+    </style>
+</head>
+
+<body style="font-family:'Times New Roman', Times, serif;">
+    <h1 style="text-align:center">2017-18 NBA Salary by Team</h1>
+    <p>See salary by team below. <br><br>
+		<i>Earnings is summed up in Dollars ($)</i>
+    </p>
+    <p><i>Place your cursor on the bubble chart to see the total earning of soccer players from each of the countries. </i></p><br><br>
+    <svg width="1250" height="700" font-family="sans-serif" font-size="10" text-anchor="middle"></svg>
+	
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+    <script>
+    
+        var svg = d3.select("svg"),
+            width = +svg.attr("width"),
+            height = +svg.attr("height");
+
+        // Define the div for the tooltip
+        var div = d3.select("body").append("div")	
+            .attr("class", "tooltip")				
+            .style("opacity", 0);
+
+
+        var pack = d3.pack()
+            .size([width-150, height])
+            .padding(1.5);
+
+        d3.csv("https://raw.githubusercontent.com/ssubhasis/cs498_DataVis_proj/master/fifa_2018_players_country_earning.csv", function(d) {
+        d.value = +d["Value"];
+        d.Country = d["Nationality"];
+        // console.log(d);
+        // debugger;
+            return d;
+        }, function(error, data) {
+        if (error) throw error;
+
+        var color = d3.scaleOrdinal()
+        .domain(data.map(function(d){ return d.Country;}))
+        .range(['#fbb4ae','#b3cde3','#ccebc5','#decbe4','#fed9a6',
+        '#ffe9a8','#b9bfe3','#fddaec','#cccccc']);
+        
+        var root = d3.hierarchy({children: data})
+            .sum(function(d) { return d.value; });
+
+        var node = svg.selectAll(".node")
+            .data(pack(root).leaves())
+            .enter().append("g")
+            .attr("class", "node")
+            .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
+        // debugger;
+    
+        node.append("circle")
+            .attr("id", function(d) { return d.id; })
+            .attr("r", function(d) { return d.r; })
+            .style("fill", function(d) { return color(d.data.Country); })
+            .on("mouseover", function(d) {		
+                div.transition()		
+                .duration(200)		
+                .style("opacity", .95);	
+            
+                var duration = 300;
+                data.forEach(function(d, i) {
+                    // console.log(d.value);
+                    node.transition().duration(duration).delay(i * duration)
+                        .attr("r", d.value);
+                    });
+        
+                div.html("Country:- "+d.data.Country + "<br>All Players Earning:- "+d.data.value +"(€)" )	
+                .style("left", (d3.event.pageX) + "px")		
+                .style("top", (d3.event.pageY - 28) + "px");	
+            })					
+            .on("mouseout", function(d) {		
+                div.transition()		
+                .duration(500)		
+                .style("opacity", 0);	
+            });
+
+        // debugger;
+
+        node.append("text")
+                .attr("dy", ".2em")
+                .style("text-anchor", "middle")
+                .text(function(d) {
+                    return d.data.Country.substring(0, d.r / 3);
+                })
+                .attr("font-family", "sans-serif")
+                .attr("font-size", function(d){
+                    return d.r/5;
+                })
+                .attr("fill", "black");
+    
+    
+    });
+
+    </script>
+</body>

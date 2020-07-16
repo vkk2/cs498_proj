@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Wins Scatter Plot</title>
+	<style>
+    body {
+  margin: 0px;
+  overflow: hidden;
+}
+
+circle {
+  fill: red;
+  opacity: 0.9;
+}
+
+text {
+  font-family: sans-serif;
+}
+
+.tick text {
+  font-size: 2.7em;
+  fill: #635F5D;
+}
+
+.tick line {
+  stroke: #C0C0BB;
+}
+
+.axis-label {
+  font-size: 1.8em;
+  fill: #8E8883;
+}
+
+.title {
+  font-size: 2em;
+  fill: #635F5D;
+}
+
+.tooltip {
+    position: absolute;
+    z-index: 10;
+    visibility: hidden;
+    background-color: white;
+    text-align: center;
+    padding: 4px;
+    border-radius: 4px;
+    font-weight: bold;
+    color: orange;
+}
+
+</style>
+    <script src='https://d3js.org/d3.v5.min.js'></script>
+  </head>
+  <body>
+    <svg width="1050" height="800"></svg>
+    <script>
+
+
+const svg = d3.select('svg');
+
+const width = +svg.attr('width');
+const height = +svg.attr('height');
+
+const render = data => {
+  const title = 'Wins vs Salary';
+  
+  const xValue = d => d.SALARY;
+  const xAxisLabel = 'Salary in $';
+  
+  const yValue = d => d.WINS;
+  const circleRadius = 10;
+  const yAxisLabel = 'Win Count';
+  
+  const margin = { top: 60, right: 100, bottom: 200, left: 200 };
+  const innerWidth = width - margin.left - margin.right;
+  const innerHeight = height - margin.top - margin.bottom;
+var color = d3.scaleOrdinal().range(["#ffd700", "#0ba0e3", "#ff9bdc", "#4b0082","#0000ff",
+												"#008000", "#ffa500", "#ff0000", "#969dff","#ff1a55",
+												"#b55ff6", "#d11e5d", "#b297ba", "#78b0df","#3d3d3d",
+												"#7000f8", "#bbc2c8", "#6e8692", "#aaaaaa","#f6cd37",
+												"#83a0a6", "#c1442e", "#514d5b", "#e18a7a","#ffdab9",
+												"#ff9a9a", "#afeeee", "#ffd700", "#81f67d","#d7bdee"]).domain(["ATL", "BOS", "BRK", "CHI", "CHO", "CLE", "DAL", "DEN", "DET", "GSW", "HOU", "IND", 
+																												"LAC", "LAL", "MEM", "MIA", "MIL", "MIN", "NOP", "NYK", "OKC", "ORL", "PHI", "PHO", 
+																												"POR", "SAC", "SAS", "TOR", "UTA", "WAS"]);
+  const xScale = d3.scaleLinear()
+    .domain(d3.extent(data, xValue))
+    .range([0, innerWidth])
+	//.tickFormat(d3.format(".0s"))
+    .nice();
+  
+  const yScale = d3.scaleLinear()
+    .domain(d3.extent(data, yValue))
+    .range([innerHeight, 0])
+    .nice();
+  
+  const g = svg.append('g')
+    .attr('transform', `translate(${margin.left},${margin.top})`);
+  var formatValue = d3.format(".2s");
+  const xAxis = d3.axisBottom(xScale)
+    //.tickSize(-innerHeight)
+	.tickSize(10)
+	.ticks(5)
+	.tickFormat(function(d) { return formatValue(d)});
+    //.tickPadding(15);
+	//.format("s");
+  
+  const yAxis = d3.axisLeft(yScale)
+    .tickSize(10)
+    .tickPadding(20);
+  
+  const yAxisG = g.append('g').call(yAxis);
+  //yAxisG.selectAll('.domain').remove();
+  
+  yAxisG.append('text')
+      .attr('class', 'axis-label')
+      .attr('y', -93)
+      .attr('x', -innerHeight / 2)
+      .attr('fill', 'black')
+      .attr('transform', `rotate(-90)`)
+      .attr('text-anchor', 'middle')
+      .text(yAxisLabel);
+  
+  const xAxisG = g.append('g').call(xAxis)
+    .attr('transform', `translate(0,${innerHeight})`);
+  
+  //xAxisG.select('.domain').remove();
+  
+  xAxisG.append('text')
+      .attr('class', 'axis-label')
+      .attr('y', 75)
+      .attr('x', innerWidth / 2)
+      .attr('fill', 'black')
+      .text(xAxisLabel);
+  var tooltip = d3.select("body")
+  .append("div")
+  .attr('class', 'tooltip');
+  
+  g.selectAll('circle').data(data)
+    .enter().append('circle')
+      .attr('cy', d => yScale(yValue(d)))
+      .attr('cx', d => xScale(xValue(d)))
+      .attr('r', circleRadius)
+	  .style('fill', function(d){ return color(d.team); })
+	   .on("mouseover", function(d) {
+	//   	      d3.select(this)
+	//.transition()
+	//.duration(100)
+	//.attr('r',20)
+	//.attr('fill','#ff0000');
+    return tooltip.style("visibility", "visible").html("<span style='color:red'> Team : " + d.team + "<br/>" + "Wins  : " + yValue(d) + "<br/>" + "Salary : " + xValue(d) + "<br /></span>")
+		                      .style("left",  (d3.event.pageX + 30) + "px")
+                      .style("top", (d3.event.pageY - 28) + "px");}) 
+	
+  
+  // we move tooltip during of "mousemove"
+  
+  .on("mousemove", function() {
+    return tooltip.style("top", (event.pageY - 30) + "px")
+      .style("left", event.pageX + "px");
+  })
+  
+  // we hide our tooltip on "mouseout"
+  
+  .on("mouseout", function() {
+    return tooltip.style("visibility", "hidden");
+  });
+  
+  g.append('text')
+      .attr('class', 'title')
+      .attr('y', -20)
+	  .attr('x',innerWidth/2)
+      .text(title);
+
+		// I feel I understand legends much better now.
+		// define a group element for each color i, and translate it to (0, i * 20). 
+		//console.log(color.domain());
+                var legend = svg.selectAll(".legend")
+                        .data(color.domain())
+                        .enter().append("g")
+                        .attr("class", "legend")
+                        .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
+                // debugger;
+                    // draw legend colored rectangles
+                    legend.append("rect")
+                        .attr("x", width -10)
+						.attr("y", 58)
+                        .attr("width", 18)
+                        .attr("height", 10)
+                        .style("fill", function(d) {
+                            // console.log(color(d)+" "+d);
+                            return color(d);});
+                    // debugger;
+                    // draw legend text
+                    legend.append("text")
+                        .attr("x", width - 26)
+                        .attr("y", 68)
+                        .attr("dy", ".15em")
+                        .style("text-anchor", "end")
+                        .text(function(d) { return d;});
+};
+
+d3.csv('https://raw.githubusercontent.com/vkk2/cs498_proj/master/teamsalarywin.csv')
+  .then(data => {
+    data.forEach(d => {
+      d.SALARY = +d.Salary;
+      d.WINS = +d.Wins;
+	  d.team=d.Tm
+
+    });
+    render(data);
+  });
+  
+  
+	</script>
+	
+	        <p>
+			
+            Houston has the most wins but does not have largest salary. however there is a trend..higher salary generally results in more wind<br>
+            
+			<br>Click Next to see how each of player and their rating relates to this.
+			<br>Click Previous to back to overiew
+			<a href="https://vkk2.github.io/cs498_proj/salarybyteam.html" class="previous">&laquo; Previous</a>
+            <a href="https://vkk2.github.io/cs498_proj/ratingvssalary.html" class="next">Next &raquo;</a><br><br>
+        </p>
+  </body>
+</html>

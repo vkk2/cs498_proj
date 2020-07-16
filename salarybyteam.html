@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>2017-2018 NBA Team Salary</title>
@@ -66,92 +67,88 @@
             font-size: 16px;
             line-height: 20px;
         }
+		.title {
+		font-size: 1.8em;
+		fill: #635F5D;
+		}
+		.axis-label {
+		font-size: 1.8em;
+		fill: #635F5D;
+		}
 
     </style>
 </head>
 
 <body style="font-family:'Times New Roman', Times, serif;">
         <p>
-            The below chart can display sorted Country wise Players list.<br><br>
-            <i>Click on the check box to sort the chat. Click again to unsort.</i>
+            Chart Below shows each team sorted by Salary.<br><br>
         </p>
-    <label><input type="checkbox"> Sort by Salary per team</label>
 
     <script src='https://d3js.org/d3.v5.min.js'></script>
     <script>
         
-			var margin = {top: 20, right: 20, bottom: 100, left: 100},
-				width = 2060 - margin.left - margin.right,
-				height = 500 - margin.top - margin.bottom;
+			var margin = {top: 50, right: 20, bottom: 100, left: 150},
+				width = 1260 - margin.left - margin.right,
+				height = 600 - margin.top - margin.bottom;
         //var format = d3.format(".0");
 		//var format = d3.format("s");
-        //var x = d3.scaleOrdinal()
-            //.rangeRoundBands([0, width-90], .1, 1);
-			//.range([0,width-90]);
-			//.round(true);
+
 		var x=d3.scaleBand().rangeRound([0, width]).padding(0.1);
-			//.range([0,width-90])
-			//.round(true);
         var y = d3.scaleLinear().rangeRound([height, 0]);
-         //   .range([height, 0]);
-        //var xAxis = d3.svg.axis()
-          //  .scale(x)
-            //.orient("bottom");
-        //var yAxis = d3.svg.axis()
-          //  .scale(y)
-            //.orient("left")
-            //.tickFormat(format);
-		var color = d3.scaleOrdinal().range(["#ffd700", "#0ba0e3", "#ff9bdc", "#4b0082","#0000ff",
-												"#008000", "#ffa500", "#ff0000", "#969dff","#ff1a55",
-												"#b55ff6", "#d11e5d", "#b297ba", "#78b0df","#3d3d3d",
-												"#7000f8", "#bbc2c8", "#6e8692", "#aaaaaa","#f6cd37",
-												"#83a0a6", "#c1442e", "#514d5b", "#e18a7a","#ffdab9",
-												"#ff9a9a", "#afeeee", "#ffd700", "#81f67d","#d7bdee"]).domain(["ATL", "BOS", "BRK", "CHI", "CHO", "CLE", "DAL", "DEN", "DET", "GSW", "HOU", "IND", 
+		var color = d3.scaleOrdinal().range(["#ff1a55","#83a0a6","#d7bdee","#0000ff","#ffdab9","#aaaaaa",
+												"#b55ff6","#ffd700","#afeeee","#008000","#0ba0e3",
+												"#6e8692","#7000f8","#3d3d3d","#f6cd37","#ff0000",
+												"#81f67d","#c1442e","#bbc2c8","#d11e5d","#514d5b",
+												"#b297ba","#78b0df","#969dff","#ffa500","#ff9bdc",
+												"#ffd700","#ff9a9a","#e18a7a","4b0082"]).domain(["ATL", "BOS", "BRK", "CHI", "CHO", "CLE", "DAL", "DEN", "DET", "GSW", "HOU", "IND", 
 																												"LAC", "LAL", "MEM", "MIA", "MIL", "MIN", "NOP", "NYK", "OKC", "ORL", "PHI", "PHO", 
 																												"POR", "SAC", "SAS", "TOR", "UTA", "WAS"]);
+		const title='Salary Of each NBA Team';																						
+																									
 		var render=data => {
 			
-
-		            // don't want dots overlapping axis, so add in buffer to data domain
-            //   xScale = d3.scale.linear().range([0, width])
-            x.domain(data.map(function(d) { return d.COUNTRY; }));
+            x.domain(data.map(function(d) { return d.TEAM; }));
             y.domain([50000000, d3.max(data, function(d) { return d.VALUE; })]);
-            svg.append("g")
+            const gxaxis=svg.append("g")
                 .attr("class", "x axis")
-                //.attr("transform", "translate(0," + height + ")")
 				.attr("transform", `translate(${0}, ${height})`)
-                .call(d3.axisBottom(x))
-                .selectAll("text")  
-                        .style("text-anchor", "end")
-                        .attr("dx", "-.5em")
-                        .attr("dy", "-.9em")
-                        .attr("transform", function(d) {
-                            return "rotate(-90)" 
-                        });
-            svg.append("g")
+                .call(d3.axisBottom(x));
+
+			gxaxis.append('text')
+				.attr('class', 'axis-label')
+				//.attr('font-size', 5em)
+				.attr("y",50)
+				//.attr("x",800)
+				.attr("x",(width-margin.right)/2)
+				//.attr("fill","black")
+				.text('Team');					
+				
+            const gyaxis=svg.append("g")
                 .attr("class", "y axis")
                 .call(d3.axisLeft(y))
-                .append("text")
-                .attr("transform", "rotate(-90)")
-                .attr("y", 6)
-                .attr("dy", ".71em")
-                .style("text-anchor", "end")
-                .text("Player Count");
+
+			gyaxis.append('text')
+				.attr('class', 'axis-label')
+				.attr("y",0)
+				.attr("x",0)
+				//.attr("x",(width-margin.right)/2)
+				.attr("fill","black")
+				.text('Salary');
+				//.attr("transform",rotate(-90));	
 
             svg.selectAll(".bar")
                 .data(data)
                 .enter().append("rect")
                 .attr("class", "bar")
-                .attr("x", function(d) { return x(d.COUNTRY); })
-                //.attr("width", x.rangeBand())
+                .attr("x", function(d) { return x(d.TEAM); })
 				.attr("width", x.bandwidth())
                 .attr("y", function(d) { return y(d.VALUE); })
 				.attr("fill",function(d,i){return color(i)})
                 .attr("height", function(d) { return height - y(d.VALUE); })
-				
+			
                 .on("mouseover", function(d) {
 
-                    //Get this bar's x/y values, then augment for the tooltip
+                    //x and y position
                     var xPosition = parseFloat(d3.select(this).attr("x")) ;
                     var yPosition = parseFloat(d3.select(this).attr("y")) / 2 ;
 
@@ -162,51 +159,23 @@
                         .select("#value")
                         .text(d);
 
-                    //Show the tooltip
+                    //make tooltip visible
                     d3.select("#tooltip").classed("hidden", false);
                 })
                 .on("mouseout", function() {
-                
-                    //Hide the tooltip
+                    //hide tooltip
                     d3.select("#tooltip").classed("hidden", true);
-                    
-                
                 })
                 .append("title")
                 .text(function(d) {
                     return "Salary:- "+d.VALUE;
                     });
-                d3.select("input").on("change", change);
-                // var sortTimeout = setTimeout(function() {
-                // d3.select("input").property("checked", true).each(change);
-                //}, 2000);
-            function change() {
-                //clearTimeout(sortTimeout);
-                var x0 = x.domain(data.sort(this.checked
-                    ? function(a, b) { return b.VALUE - a.VALUE; }
-                    : function(a, b) { return d3.ascending(a.COUNTRY, b.COUNTRY); })
-                    .map(function(d) { return d.COUNTRY; }))
-                    .copy();
-                svg.selectAll(".bar")
-                    .sort(function(a, b) { return x0(a.COUNTRY) - x0(b.COUNTRY); });
-                var transition = svg.transition().duration(550),
-                    delay = function(d, i) { return i * 50; };
-                transition.selectAll(".bar")
-                    .delay(delay)
-                    .attr("x", function(d) { return x0(d.COUNTRY); });
-                transition.select(".x.axis")
-                    //.call(xAxis)
-					.call(d3.axisBottom(x))
-                    .selectAll("g")
-                    .delay(delay)
-                    .selectAll("text")  
-                    .style("text-anchor", "end")
-                    .attr("dx", "-.5em")
-                    .attr("dy", "-.9em")
-                    .attr("transform", function(d) {
-                        return "rotate(-90)" 
-                    });
-            }
+			svg.append('text')
+				.attr('class', 'title')
+				.attr("y",-10)
+				.attr("x",(width-margin.right)/2)
+				.text(title);
+
 		};
 		
         var svg = d3.select("body")
@@ -214,17 +183,27 @@
             .attr("width", width + margin.left + margin.right)
             .attr("height", height + margin.top + margin.bottom)
 			.append("g")
-            //.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-			.attr("transform", `translate( ${margin.left}, ${margin.top})`);
-        d3.csv("https://raw.githubusercontent.com/vkk2/cs498_proj/master/teamsalarywin.csv").then(data => {
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+			
+        d3.csv("https://raw.githubusercontent.com/vkk2/cs498_proj/master/teamsalarywinsorted.csv").then(data => {
             data.forEach(d=> {
                 d.VALUE = +d.Salary;
-                d.COUNTRY =  d["Tm"];
+                d.TEAM =  d["Tm"];
             });
 			//data.sort(function(a,b){ return b.VALUE-a.VALUE});
 			render(data);
 
         });
     </script>
-
+	
+        <p>
+			
+            GSW, OKC, WAS have the most salaries<br>
+            
+			<br>Click Next to see if these salaries results in wins.
+			<br>Click Previous to back to overiew
+			<a href="https://vkk2.github.io/cs498_proj/index.html" class="previous">&laquo; Previous</a>
+            <a href="https://vkk2.github.io/cs498_proj/winvssalary.html" class="next">Next &raquo;</a><br><br>
+        </p>
 </body>
+</html>

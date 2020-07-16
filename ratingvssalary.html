@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Player Wins Share Scatter Plot</title>
+	<style>
+    body {
+  margin: 0px;
+  overflow: hidden;
+}
+
+circle {
+  fill: red;
+  opacity: 0.9;
+}
+
+text {
+  font-family: sans-serif;
+}
+
+.tick text {
+  font-size: 2.7em;
+  fill: #635F5D;
+}
+
+.tick line {
+  stroke: #C0C0BB;
+}
+
+.axis-label {
+  font-size: 1.8em;
+  fill: #8E8883;
+}
+
+.title {
+  font-size: 2em;
+  fill: #635F5D;
+}
+
+.tooltip {
+    position: absolute;
+    z-index: 10;
+    visibility: hidden;
+    background-color: white;
+    text-align: center;
+    padding: 4px;
+    border-radius: 4px;
+    font-weight: bold;
+    color: black;
+}
+
+</style>
+    <script src='https://d3js.org/d3.v5.min.js'></script>
+  </head>
+  <body>
+    <svg width="1050" height="800"></svg>
+    <script>
+
+
+const svg = d3.select('svg');
+
+const width = +svg.attr('width');
+const height = +svg.attr('height');
+
+
+const render = data => {
+  const title = 'Player Win Share Metric vs Salary';
+  
+  //const dValue = d => d.team;
+  const xValue = d => d.SALARY;
+  const xAxisLabel = 'Salary in $';
+  
+  const yValue = d => d.WINS;
+  const circleRadius = 10;
+  const yAxisLabel = 'Win Share';
+  
+  const margin = { top: 60, right: 100, bottom: 200, left: 200 };
+  const innerWidth = width - margin.left - margin.right;
+  const innerHeight = height - margin.top - margin.bottom;
+const color = d3.scaleOrdinal().range(["#ffd700", "#0ba0e3", "#ff9bdc", "#4b0082","#0000ff",
+												"#008000", "#ffa500", "#ff0000", "#969dff","#ff1a55",
+												"#b55ff6", "#d11e5d", "#b297ba", "#78b0df","#3d3d3d",
+												"#7000f8", "#bbc2c8", "#6e8692", "#aaaaaa","#f6cd37",
+												"#83a0a6", "#c1442e", "#514d5b", "#e18a7a","#ffdab9",
+												"#ff9a9a", "#afeeee", "#ffd700", "#81f67d","#d7bdee"]).domain(["ATL", "BOS", "BRK", "CHI", "CHO", "CLE", "DAL", "DEN", "DET", "GSW", "HOU", "IND", 
+																												"LAC", "LAL", "MEM", "MIA", "MIL", "MIN", "NOP", "NYK", "OKC", "ORL", "PHI", "PHO", 
+																												"POR", "SAC", "SAS", "TOR", "UTA", "WAS"]);
+  const xScale = d3.scaleLinear()
+    .domain(d3.extent(data, xValue))
+    .range([0, innerWidth])
+	//.tickFormat(d3.format(".0s"))
+    .nice();
+  
+  const yScale = d3.scaleLinear()
+    .domain(d3.extent(data, yValue))
+    .range([innerHeight, 0])
+    .nice();
+  
+  const g = svg.append('g')
+    .attr('transform', `translate(${margin.left},${margin.top})`);
+  var formatValue = d3.format(".2s");
+  const xAxis = d3.axisBottom(xScale)
+    .tickSize(10)
+	.ticks(5)
+	.tickFormat(function(d) { return formatValue(d)});
+    //.tickPadding(15);
+	//.format("s");
+  
+  const yAxis = d3.axisLeft(yScale)
+    .tickSize(10)
+    .tickPadding(10);
+  
+  const yAxisG = g.append('g').call(yAxis);
+  //yAxisG.selectAll('.domain').remove();
+  
+  yAxisG.append('text')
+      .attr('class', 'axis-label')
+      .attr('y', -93)
+      .attr('x', -innerHeight / 2)
+      .attr('fill', 'black')
+      .attr('transform', `rotate(-90)`)
+      .attr('text-anchor', 'middle')
+      .text(yAxisLabel);
+  
+  const xAxisG = g.append('g').call(xAxis)
+    .attr('transform', `translate(0,${innerHeight})`);
+  
+  //xAxisG.select('.domain').remove();
+  
+  xAxisG.append('text')
+      .attr('class', 'axis-label')
+      .attr('y', 75)
+      .attr('x', innerWidth / 2)
+      .attr('fill', 'black')
+      .text(xAxisLabel);
+  var tooltip = d3.select("body")
+  .append("div")
+  .attr('class', 'tooltip');
+  
+
+  
+  //
+  g.selectAll('.circle').data(data)
+    .enter().append('circle')
+		.attr("class","circle")
+      .attr('cy', d => yScale(yValue(d)))
+      .attr('cx', d => xScale(xValue(d)))
+      .attr('r', circleRadius)
+	  .style('fill', function(d){ return color(d.team); })
+	  //.on("mouseover", tipMouseover)
+	   .on("mouseover", function(d) {
+	    d3.select(this)
+        .transition()
+        .duration(100)
+        .attr('r', 20)
+        .attr('fill', '#ff0000');
+		return tooltip.style("visibility", "visible").html("<span style='color:red'> Player : " + d.player + "<br/>" + "Win Share Rating  : " + yValue(d) + "<br/>" + "Salary : " + xValue(d) + "<br /></span>")
+		                      .style("left",  (d3.event.pageX + 30) + "px")
+                      .style("top", (d3.event.pageY - 28) + "px");}) 
+		
+		//text('Salary = ' + xValue(d) + ' Wins=' +yValue(d) + ' Player=' +d.player);})
+	
+  
+  // we move tooltip during of "mousemove"
+  
+  .on("mousemove", function() {
+    return tooltip.style("top", (event.pageY - 30) + "px")
+      .style("left", event.pageX + "px");
+  })
+  
+  // we hide our tooltip on "mouseout"
+  
+  .on("mouseout", function() {
+	d3.select(this)
+	        .transition()
+        .duration(100)
+	.attr('r', 10);
+    return tooltip.style("visibility", "hidden");
+  })
+  
+  //.on("mouseover", highlight)
+   //.on("mouseleave", doNotHighlight );
+
+  g.append('text')
+      .attr('class', 'title')
+      .attr('y', -20)
+	  .attr('x',innerWidth/4)
+      .text(title);
+	  
+  //console.log(color.domain());
+				var clicked = ""
+                var legend = svg.selectAll(".legend")
+                        .data(color.domain())
+                        .enter().append("g")
+                        .attr("class", "legend")
+                        .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
+                // debugger;
+                    // draw legend colored rectangles
+                    legend.append("rect")
+                        .attr("x", width -18)
+						.attr("y", 58)
+                        .attr("width", 10)
+                        .attr("height", 10)
+                        .style("fill", function(d) {
+                            // console.log(color(d)+" "+d);
+                            return color(d);})
+						.on("click",function(d){
+						d3.selectAll(".circle").style("opacity",1)
+   
+						if (clicked !== d){
+							d3.selectAll(".circle")
+								.filter(function(e){
+									return e.team !== d;
+								})
+							.style("opacity",0.1)
+							clicked = d
+						}
+						else{
+							clicked = ""
+						}
+						});
+                    // debugger;
+                    // draw legend text
+                    legend.append("text")
+                        .attr("x", width - 26)
+                        .attr("y", 68)
+                        .attr("dy", ".15em")
+                        .style("text-anchor", "end")
+                        .text(function(d) { return d;});	  
+	  
+};
+
+d3.csv('https://raw.githubusercontent.com/vkk2/cs498_proj/master/2017-18_NBA_salary_rating.csv')
+  .then(data => {
+    data.forEach(d => {
+      d.SALARY = +d.Salary;
+      d.WINS = +d.WS;
+	  d.team=d.Tm
+	  d.player=d.Player
+
+    });
+    render(data);
+  });
+	</script>
+	
+	        <p>
+			
+            GSW, OKC, WAS have the most salaries<br>
+            
+			<br>Click Next to see if these salaries results in wins.
+			<br>Click Previous to back to overiew
+			<a href="https://vkk2.github.io/cs498_proj/winvssalary.html" class="previous">&laquo; Previous</a>
+            <a href="https://vkk2.github.io/cs498_proj/index.html" class="next">Next &raquo;</a><br><br>
+        </p>
+  </body>
+</html>

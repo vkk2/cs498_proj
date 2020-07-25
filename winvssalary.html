@@ -12,9 +12,18 @@ circle {
   fill: red;
   opacity: 0.9;
 }
+a {
+		text-decoration: none;
+		display: inline-block;
+		padding: 8px 16px;
+	}
 
+	a:hover {
+		background-color: #ddd;
+		color: black;
+	}
 text {
-  font-family: sans-serif;
+ font-family: sans-serif;
 }
 
 .tick text {
@@ -30,29 +39,44 @@ text {
   font-size: 1.8em;
   fill: #8E8883;
 }
-
+.legend {
+  font-size: .8em;
+  fill: #8E8883;
+}
 .title {
-  font-size: 2em;
+  font-size: 1.8em;
   fill: #635F5D;
 }
 
-.tooltip {
-    position: absolute;
-    z-index: 10;
-    visibility: hidden;
-    background-color: white;
-    text-align: center;
-    padding: 4px;
-    border-radius: 4px;
-    font-weight: bold;
-    color: orange;
-}
 
+            .tooltip {
+                position: absolute;			
+                text-align: left;			
+                width: 170px;					
+                height: 50px;					
+                padding: 2px;				
+                font: 12px sans-serif;		
+                background: rgb(220, 228, 223);	
+                border: 1px;		
+                border-radius: 8px;			
+                pointer-events: none;	
+            }
+.next {
+	background-color: #4CAF50;
+	color: white;
+}
+.previous {
+	background-color: #f1f1f1;
+	color: black;
+}
 </style>
     <script src='https://d3js.org/d3.v5.min.js'></script>
   </head>
   <body>
-    <svg width="1050" height="800"></svg>
+            <p style="font-size: 16px">
+		<b><i>Use the mouseover to get more detail</i></b>
+        </p>
+    <svg width="1050" height="700"></svg>
     <script>
 
 
@@ -71,7 +95,7 @@ const render = data => {
   const circleRadius = 10;
   const yAxisLabel = 'Win Count';
   
-  const margin = { top: 60, right: 100, bottom: 200, left: 200 };
+  const margin = { top: 50, right: 100, bottom: 100, left: 120 };
   const innerWidth = width - margin.left - margin.right;
   const innerHeight = height - margin.top - margin.bottom;
 var color = d3.scaleOrdinal().range(["#ffd700", "#0ba0e3", "#ff9bdc", "#4b0082","#0000ff",
@@ -134,53 +158,68 @@ var color = d3.scaleOrdinal().range(["#ffd700", "#0ba0e3", "#ff9bdc", "#4b0082",
   var tooltip = d3.select("body")
   .append("div")
   .attr('class', 'tooltip');
-  
+
+
+
+
+	
   g.selectAll('circle').data(data)
     .enter().append('circle')
       .attr('cy', d => yScale(yValue(d)))
       .attr('cx', d => xScale(xValue(d)))
       .attr('r', circleRadius)
-	  .style('fill', function(d){ return color(d.team); })
+	  .style('fill', function(d){ return color(d.TEAM); })
 	   .on("mouseover", function(d) {
-	//   	      d3.select(this)
-	//.transition()
-	//.duration(100)
-	//.attr('r',20)
-	//.attr('fill','#ff0000');
-    return tooltip.style("visibility", "visible").html("<span style='color:red'> Team : " + d.team + "<br/>" + "Wins  : " + yValue(d) + "<br/>" + "Salary : " + xValue(d) + "<br /></span>")
+	   	      d3.select(this)
+	.transition()
+	.duration(100)
+	.attr('r',20)
+	.attr('fill','#ff0000');
+    return tooltip.style("visibility", "visible").html("<span> Team : " + d.TEAM + "<br/>" + "Wins  : " + yValue(d) + "<br/>" + "Salary : " + xValue(d) + "<br /></span>")
 		                      .style("left",  (d3.event.pageX + 30) + "px")
                       .style("top", (d3.event.pageY - 28) + "px");}) 
 	
   
-  // we move tooltip during of "mousemove"
+  // move tooltip
   
   .on("mousemove", function() {
     return tooltip.style("top", (event.pageY - 30) + "px")
       .style("left", event.pageX + "px");
   })
   
-  // we hide our tooltip on "mouseout"
+  // mouseout hide tooltip
   
   .on("mouseout", function() {
+  	d3.select(this)
+	        .transition()
+        .duration(100)
+	.attr('r', 10);
     return tooltip.style("visibility", "hidden");
   });
-  
+  	
+
   g.append('text')
       .attr('class', 'title')
       .attr('y', -20)
 	  .attr('x',innerWidth/2)
       .text(title);
+	  
+ g.append('text')
+    .attr("fill", "black")
+    .attr("x", width * 0.1)
+    .attr("y", 50 )
+    .style("font-size", "1em")
+    .attr("width", 200)
+    .attr("height", 20)
+    .text("Higher Salary tends to lead to higher wins");
+	
 
-		// I feel I understand legends much better now.
-		// define a group element for each color i, and translate it to (0, i * 20). 
-		//console.log(color.domain());
                 var legend = svg.selectAll(".legend")
                         .data(color.domain())
                         .enter().append("g")
                         .attr("class", "legend")
                         .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
-                // debugger;
-                    // draw legend colored rectangles
+
                     legend.append("rect")
                         .attr("x", width -10)
 						.attr("y", 58)
@@ -189,14 +228,19 @@ var color = d3.scaleOrdinal().range(["#ffd700", "#0ba0e3", "#ff9bdc", "#4b0082",
                         .style("fill", function(d) {
                             // console.log(color(d)+" "+d);
                             return color(d);});
-                    // debugger;
-                    // draw legend text
+
                     legend.append("text")
                         .attr("x", width - 26)
                         .attr("y", 68)
                         .attr("dy", ".15em")
                         .style("text-anchor", "end")
                         .text(function(d) { return d;});
+						
+
+   //.attr("y", function(d) {
+      //  return yScale(yValue(d));
+   //})
+   //})
 };
 
 d3.csv('https://raw.githubusercontent.com/vkk2/cs498_proj/master/teamsalarywin.csv')
@@ -204,7 +248,7 @@ d3.csv('https://raw.githubusercontent.com/vkk2/cs498_proj/master/teamsalarywin.c
     data.forEach(d => {
       d.SALARY = +d.Salary;
       d.WINS = +d.Wins;
-	  d.team=d.Tm
+	  d.TEAM=d.Tm
 
     });
     render(data);
@@ -214,13 +258,13 @@ d3.csv('https://raw.githubusercontent.com/vkk2/cs498_proj/master/teamsalarywin.c
 	</script>
 	
 	        <p>
-			
-            Houston has the most wins but does not have largest salary. however there is a trend..higher salary generally results in more wind<br>
-            
-			<br>Click Next to see how each of player and their rating relates to this.
-			<br>Click Previous to back to overiew
+            <b>Observations:</b>Houston has the most wins but does not have largest salary. However, a trend can be observed that higher salary generally results in more wins.
+			<br>Click Next to see each of player and their rating.<br><br>
 			<a href="https://vkk2.github.io/cs498_proj/salarybyteam.html" class="previous">&laquo; Previous</a>
-            <a href="https://vkk2.github.io/cs498_proj/ratingvssalary.html" class="next">Next &raquo;</a><br><br>
+            <a href="https://vkk2.github.io/cs498_proj/ratingvssalary.html" class="next">Next &raquo;</a><br>
+			
+			
+			
         </p>
   </body>
 </html>

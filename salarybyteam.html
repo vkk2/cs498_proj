@@ -59,20 +59,19 @@
             transition: all 0.3s;
         }
 
-        #tooltip {
-            position: absolute;
-            width: 200px;
-            height: auto;
-            padding: 10px;
-            background-color: rgb(220, 228, 223);
-            -webkit-border-radius: 10px;
-            -moz-border-radius: 10px;
-            border-radius: 10px;
-            -webkit-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
-            -moz-box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
-            box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
-            pointer-events: none;
-        }
+
+		            .tooltip {
+                position: absolute;			
+                text-align: left;			
+                width: 170px;					
+                height: 50px;					
+                padding: 2px;				
+                font: 12px sans-serif;		
+                background: rgb(220, 228, 223);	
+                border: 1px;		
+                border-radius: 8px;			
+                pointer-events: none;	
+            }
 
         #tooltip.hidden {
             display: none;
@@ -98,7 +97,7 @@
 
 <body style="font-family:'Times New Roman', Times, serif;">
 
-            <p style="font-size: 16px">
+            <p style="font-size: 16px;color:#FF0000">
 		<b><i>Use the mouseover to get more detail</i></b>
         </p>
     <script src='https://d3js.org/d3.v5.min.js'></script>
@@ -165,18 +164,18 @@
                     var yPosition = parseFloat(d3.select(this).attr("y")) / 2 ;
 
                     //Update the tooltip position and value
-                    d3.select("#tooltip")
+                    d3.select(".tooltip")
                         .style("left", xPosition + "px")
                         .style("top", yPosition + "px")						
                         .select("#value")
                         .text(d);
 
-                    //make tooltip visible
-                    d3.select("#tooltip").classed("hidden", false);
+
+                    d3.select(".tooltip").classed("hidden", false);
                 })
                 .on("mouseout", function() {
                     //hide tooltip
-                    d3.select("#tooltip").classed("hidden", true);
+                    d3.select(".tooltip").classed("hidden", true);
                 })
                 .append("title")
                 .text(function(d) {

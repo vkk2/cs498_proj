@@ -39,17 +39,7 @@ text {
   fill: #635F5D;
 }
 
-.tooltip {
-    position: absolute;
-    z-index: 10;
-    visibility: hidden;
-    background-color: white;
-    text-align: center;
-    padding: 4px;
-    border-radius: 4px;
-    font-weight: bold;
-    color: black;
-}
+
             .tooltip {
                 position: absolute;			
                 text-align: left;			
@@ -84,9 +74,10 @@ text {
       }
 </style>
     <script src='https://d3js.org/d3.v5.min.js'></script>
+	<script src="https://rawgit.com/susielu/d3-annotation/master/d3-annotation.min.js"></script>
   </head>
   <body>
-          <p style="font-size: 16px">
+          <p style="font-size: 16px;color:#FF0000";>
 		<b><i>Use the legend to select team you want</i></b><br>
 		<b><i>Use the mouseover to get more detail</i></b>
         </p>
@@ -99,6 +90,26 @@ const svg = d3.select('svg');
 const width = +svg.attr('width');
 const height = +svg.attr('height');
 
+  // Features of the annotation visit https://www.d3-graph-gallery.com/graph/custom_annotation.html for more changes
+
+  const annotations = [
+    {
+          type: d3.annotationCalloutCircle,
+          note: {
+            label: "Winshare Rating 15, Salary: 28.3M",
+            title: "James Harden",
+            wrap: 190
+          },
+          //settings for the subject, in this case the circle radius
+          subject: {
+            radius: 50
+          },
+		  //790,75,75,-150
+          x: 790,
+          y: 75,
+          dy: 75,
+          dx: -150
+        }].map(function(d){ d.color = "#E8336D"; return d})
 
 const render = data => {
   const title = 'Player Win Share Rating vs Salary';
@@ -259,7 +270,13 @@ const color = d3.scaleOrdinal().range(["#ffd700", "#0ba0e3", "#ff9bdc", "#4b0082
                         .attr("y", 68)
                         .attr("dy", ".15em")
                         .style("text-anchor", "end")
-                        .text(function(d) { return d;});	  
+                        .text(function(d) { return d;});
+
+  // Add annotation to the chart
+  const makeAnnotations = d3.annotation()
+    .annotations(annotations)
+  svg.append("g")
+    .call(makeAnnotations)						
 	  
 };
 

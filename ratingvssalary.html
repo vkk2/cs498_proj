@@ -38,6 +38,15 @@ text {
   font-size: 1.4em;
   fill: #635F5D;
 }
+.annotitle {
+  font-size: 1.4em;
+  fill:#E8336D;
+}
+.annolabel {
+  font-size: 1em;
+  fill: #E8336D;
+}
+
 
 
             .tooltip {
@@ -74,7 +83,6 @@ text {
       }
 </style>
     <script src='https://d3js.org/d3.v5.min.js'></script>
-	<script src="https://rawgit.com/susielu/d3-annotation/master/d3-annotation.min.js"></script>
   </head>
   <body>
           <p style="font-size: 16px;color:#FF0000";>
@@ -90,30 +98,12 @@ const svg = d3.select('svg');
 const width = +svg.attr('width');
 const height = +svg.attr('height');
 
-  // Features of the annotation visit https://www.d3-graph-gallery.com/graph/custom_annotation.html for more changes
 
-  const annotations = [
-    {
-          type: d3.annotationCalloutCircle,
-          note: {
-            label: "Winshare Rating 15, Salary: 28.3M",
-            title: "James Harden",
-            wrap: 190
-          },
-          //settings for the subject, in this case the circle radius
-          subject: {
-            radius: 50
-          },
-		  //790,75,75,-150
-          x: 790,
-          y: 75,
-          dy: 75,
-          dx: -150
-        }].map(function(d){ d.color = "#E8336D"; return d})
 
 const render = data => {
   const title = 'Player Win Share Rating vs Salary';
-  
+              const annotlabel= "Winshare Rating 15, Salary: 28.3M";
+            const annottitle= "James Harden";
 
   const xValue = d => d.SALARY;
   const xAxisLabel = 'Salary in $';
@@ -172,7 +162,7 @@ const color = d3.scaleOrdinal().range(["#ffd700", "#0ba0e3", "#ff9bdc", "#4b0082
   const xAxisG = g.append('g').call(xAxis)
     .attr('transform', `translate(0,${innerHeight})`);
   
-  //xAxisG.select('.domain').remove();
+
   
   xAxisG.append('text')
       .attr('class', 'axis-label')
@@ -273,12 +263,52 @@ const color = d3.scaleOrdinal().range(["#ffd700", "#0ba0e3", "#ff9bdc", "#4b0082
                         .text(function(d) { return d;});
 
   // Add annotation to the chart
-  const makeAnnotations = d3.annotation()
-    .annotations(annotations)
-  svg.append("g")
-    .call(makeAnnotations)						
-	  
+  //const makeAnnotations = d3.annotation()
+  //  .annotations(annotations)
+  //svg.append("g")
+  //  .call(makeAnnotations);						
+  svg.append('circle')
+  .attr('cx', 790)
+  .attr('cy', 80)
+  .attr('r', 50)
+  .attr("stroke-width", 2)
+  .attr('stroke', '#E8336D')
+  .style('fill', 'none');
+  
+  svg.append("line")
+	.attr("x1", 700)
+	.attr("y1", 120)
+	.attr("x2", 740)
+	.attr("y2", 90)
+	.attr("stroke-width", 2)
+	.attr("stroke", "#E8336D")
+	
+  svg.append("line")
+	.attr("x1", 600)
+	.attr("y1", 120)
+	.attr("x2", 700)
+	.attr("y2", 120)
+	.attr("stroke-width", 2)
+	.attr("stroke", "#E8336D")
 };
+
+  svg.append('text')
+      .attr('class', 'annotitle')
+      .attr('y', 100)
+	  .attr('x',450)
+      .text("James Harden");
+	  
+  svg.append('text')
+      .attr('class', 'annolabel')
+      .attr('y', 120)
+	  .attr('x',450)
+      .text("Winshare Rating 15");
+	  
+  svg.append('text')
+      .attr('class', 'annolabel')
+      .attr('y', 140)
+	  .attr('x',450)
+      .text("Salary: 28.3M");
 
 d3.csv('https://raw.githubusercontent.com/vkk2/cs498_proj/master/2017-18_NBA_salary_rating.csv')
   .then(data => {
@@ -295,8 +325,9 @@ d3.csv('https://raw.githubusercontent.com/vkk2/cs498_proj/master/2017-18_NBA_sal
 	
 	        <p>
 			
-            <b>Observations:</b> James Harden from Houston has the highest Win share rating and Houston is the only team with 3 players with rating of ~10 or more<br>
-			There are some over performers(are on a rookie contract) and some who have higher salary and performed poorly(possibly due to injury/skill).
+            <b>Observations:</b> James Harden from Houston has the highest Win share rating which aligns with him being chosen as a MVP for the season.Also, Houston is the only team with 3 players with rating of ~10 or more.<br>
+			In general, also note there are some over performers(who earn less and have high Win Share rating) due to them being on a rookie/friendly contract(like Capela from Houston)
+			and some who have higher salary and performed poorly, possibly due to injury/skill(like Gordon Hayward).			
             
 
 			<br>Click Start Over if you want to start over.<br><br>

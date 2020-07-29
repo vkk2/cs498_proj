@@ -10,6 +10,14 @@
             position: relative;
             width: 960px;
         }
+		.annotitle {
+  font-size: 1.4em;
+  fill:#E8336D;
+}
+.annolabel {
+  font-size: 1em;
+  fill: #E8336D;
+}
         .axis text {
             font:  sans-serif;
         }
@@ -187,7 +195,35 @@
 				.attr("x",(width-margin.right)/4)
 				.text(title);
 
+    svg.append('line')
+  .attr("x1", 5)
+  .attr("y1", 110)
+  .attr("x2", 750)
+  .attr("y2", 110)
+	.style("stroke-dasharray","5,5")//dashed array for line
+      //.style("stroke", color);
+    .style("stroke", "#E8336D");
+	
+  svg.append('text')
+      .attr('class', 'annotitle')
+      .attr('y', 110)
+	  .attr('x',700)
+      .text("LUXURY TAX LIMIT");	
+
+  svg.append('text')
+      .attr('class', 'annotitle')
+      .attr('y', 90)
+	  .attr('x',400)
+      .text("ABOVE LUXURY TAX");
+	  
+   svg.append('text')
+      .attr('class', 'annotitle')
+      .attr('y', 150)
+	  .attr('x',400)
+      .text("BELOW LUXURY TAX");
+	  
 		};
+
 		
         var svg = d3.select("body")
 			.append("svg")
@@ -209,7 +245,7 @@
 	
         <p>
 			
-            <b>Observations:</b>GSW(Golden State Warriors), OKC(Oklahoma City) and WAS(Washington) have the most salaries<br>
+            <b>Observations:</b>GSW(Golden State Warriors), OKC(Oklahoma City) and WAS(Washington) have the most salaries and are exceeding luxury tax limit.<br>
 			Click Next to see if these salaries results in wins.<br><br>
 			<a href="https://vkk2.github.io/cs498_proj/index.html" class="previous">&laquo; Previous</a>
             <a href="https://vkk2.github.io/cs498_proj/winvssalary.html" class="next">Next &raquo;</a>

@@ -47,6 +47,14 @@ text {
   font-size: 1.8em;
   fill: #635F5D;
 }
+.annotitle {
+  font-size: 1.4em;
+  fill:#E8336D;
+}
+.annolabel {
+  font-size: 1em;
+  fill: #E8336D;
+}
 
 
             .tooltip {
@@ -201,9 +209,49 @@ var color = d3.scaleOrdinal().range(["#ffd700", "#0ba0e3", "#ff9bdc", "#4b0082",
   g.append('text')
       .attr('class', 'title')
       .attr('y', -20)
-	  .attr('x',innerWidth/2)
+	  .attr('x',innerWidth/2-50)
       .text(title);
+  svg.append('circle')
+  .attr('cx', 720)
+  .attr('cy', 50)
+  .attr('r', 40)
+  .attr("stroke-width", 2)
+  .attr('stroke', '#E8336D')
+  .style('fill', 'none');
+  
+  svg.append("line")
+	.attr("x1", 650)
+	.attr("y1", 100)
+	.attr("x2", 685)
+	.attr("y2", 70)
+	.attr("stroke-width", 2)
+	.attr("stroke", "#E8336D");
+	
+	  svg.append("line")
+	.attr("x1", 600)
+	.attr("y1", 100)
+	.attr("x2", 650)
+	.attr("y2", 100)
+	.attr("stroke-width", 2)
+	.attr("stroke", "#E8336D");
+	
+  svg.append('text')
+      .attr('class', 'annotitle')
+      .attr('y', 100)
+	  .attr('x',500)
+      .text("Houston");
 	  
+  svg.append('text')
+      .attr('class', 'annolabel')
+      .attr('y', 120)
+	  .attr('x',500)
+      .text("Wins: 65");
+	  
+  svg.append('text')
+      .attr('class', 'annolabel')
+      .attr('y', 140)
+	  .attr('x',500)
+      .text("Salary: 114.9M");
  //g.append('text')
   //  .attr("fill", "black")
    // .attr("x", width * 0.1)

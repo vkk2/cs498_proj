@@ -221,8 +221,29 @@
       .attr('y', 150)
 	  .attr('x',400)
       .text("BELOW LUXURY TAX");
-	  
+	
+svg.append('line')
+  .attr("x1", 190)
+  .attr("y1", 140)
+  .attr("x2", 250)
+  .attr("y2", 100)
+  .style("stroke", "#E8336D");
+  
+   svg.append('text')
+      .attr('class', 'annotitle')
+      .attr('y', 80)
+	  .attr('x',220)
+      .text("Houston");
+
+  svg.append('text')
+      .attr('class', 'annolabel')
+      .attr('y', 100)
+	  .attr('x',220)
+      .text("Salary: 114.93M");	  
 		};
+		
+
+
 
 		
         var svg = d3.select("body")
